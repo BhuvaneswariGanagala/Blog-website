@@ -1,8 +1,13 @@
 import express from 'express';
 import cors from 'cors';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { connectToDatabase } from './src/utils/database.js';
 import Post from './src/models/Post.js';
 import { slugify } from './src/utils/slugify.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -11,6 +16,9 @@ const PORT = process.env.PORT || 3001;
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
+
+// Serve static files from the React app build
+app.use(express.static(path.join(__dirname, 'dist')));
 
 // Connect to database
 connectToDatabase().then(() => {
@@ -536,8 +544,16 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// Catch-all route for SPA routing
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+});
+
 // Start server
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
   console.log(`📊 API available at http://localhost:${PORT}/api`);
-}); 
+});
+
+// Export for Vercel
+export default app; 
