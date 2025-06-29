@@ -6,7 +6,10 @@ import mongoose from 'mongoose';
  */
 
 // MongoDB connection string from environment variables
-const MONGO_URI = process.env.MONGO_URI || 'mongodb+srv://gganagalabhuvaneswari:Bhuvana%40123@cluster0.7id4pfx.mongodb.net/mern_admin?retryWrites=true&w=majority&appName=Cluster0';
+const MONGO_URI = process.env.MONGO_URI;
+if (!MONGO_URI) {
+  throw new Error('MONGO_URI environment variable is not set!');
+}
 
 // Connection options - removed deprecated options
 const connectionOptions = {
